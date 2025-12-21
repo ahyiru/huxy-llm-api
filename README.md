@@ -92,7 +92,7 @@ console.log('对话结果:', response);
 
 - `generate(prompt, configs, callback)`: 文本生成
 - `chat(prompt, configs, callback)`: 聊天对话
-- `responses(prompt, configs, callback)`: 结构化响应
+- <del>`responses(prompt, configs, callback)`: 结构化响应</del>
 
 ### OpenAI 方法
 
@@ -106,7 +106,7 @@ console.log('对话结果:', response);
   - `model`: 模型名称
   - `stream`: 是否流式响应（默认: false）
   - `system`: 系统提示（聊天模式）
-  - `options`: 其他模型参数
+  - `options`: 其他模型参数（OpenAI 可使用 `extra_body`）
      - `temperature`: 生成温度（0-1）
      - `top_p`: 核采样概率
 - `callback`: 函数 - 流式响应回调
@@ -159,25 +159,6 @@ console.log('对话结果:', response);
     thinking: true,
   }
 }
-```
-
-## 高级用法
-
-### 自定义 Fetch
-
-项目使用 Undici 实现高性能 HTTP 请求，并支持自定义超时：
-
-```javascript
-import customFetch from 'huxy-llm-api/customFetch';
-
-// 自定义请求
-const response = await customFetch('https://api.example.com', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({prompt: 'Hello'}),
-});
 ```
 
 ### 环境变量

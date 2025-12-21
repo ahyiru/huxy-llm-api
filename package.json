@@ -1,6 +1,6 @@
 {
   "name": "huxy-llm-api",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0",
   "description": "一个简洁、易用的用于简化 Ollama 和 OpenAI API 调用的 Node.js 库。",
   "type": "module",
   "module": "./src/index.js",

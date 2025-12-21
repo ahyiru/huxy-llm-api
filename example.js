@@ -16,7 +16,7 @@ const openaiApi = startApi('openai', {
 
 const demo = async () => {
   const ollamaResult = await ollamaApi.generate('你好', {
-    model: 'devstral-small-2',
+    model: 'ministral3:14b-reasoning',
     stream: false,
     options: {
       temperature: 0.15,
@@ -38,6 +38,18 @@ const demo = async () => {
     console.log(mesg, resp);
   });
   console.log(openaiResult);
+
+  const responsesResult = await openaiApi.responses('你是谁', {
+    model: 'qwen3-vl',
+    temperature: 0.15,
+    stream: true,
+    options: {
+      top_k: 20,
+    },
+  }, (mesg, resp) => {
+    console.log(mesg, resp);
+  });
+  console.log(responsesResult);
 };
 
 demo();
