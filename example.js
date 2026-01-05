@@ -12,6 +12,8 @@ const openaiApi = startApi('openai', {
   baseURL: 'http://192.168.0.111:11434/v1',
   // headers
   // fetch
+}, {
+  model: 'qwen3-vl',
 });
 
 const demo = async () => {

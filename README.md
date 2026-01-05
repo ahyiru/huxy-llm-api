@@ -32,6 +32,11 @@ import startApi from 'huxy-llm-api';
 const ollamaApi = startApi('ollama', {
   apiKey: 'your-api-key',
   host: 'http://localhost:11434',
+}, {
+  model: 'qwen3-vl:latest',
+  options: {
+    num_ctx: 4096,
+  },
 });
 
 // 初始化 OpenAI API
