@@ -1,162 +1,167 @@
-import {Ollama as B} from 'ollama';
-import H from 'openai';
+import {Ollama as H} from 'ollama';
+import j from 'openai';
 import {fetch as K, Agent as M} from 'undici';
 var U = 300 * 60 * 1e3,
-  E = (t, r) => K(t, {...r, dispatcher: new M({headersTimeout: U})}),
-  w = E;
+  E = (t, a) => K(t, {...a, dispatcher: new M({headersTimeout: U})}),
+  R = E;
 var T = {
     config: {apiKey: process.env.LLM_API_KEY || 'ah.yiru@gmail.com', baseURL: process.env.LLM_API_BASEURL || 'http://127.0.0.1:11434/v1', timeout: process.env.LLM_API_TIMEOUT || 108e5, maxRetries: 3},
     params: {model: 'qwen3-vl:latest', temperature: 1, max_tokens: 4096, top_p: 0.95},
     options: {top_k: 20, repeat_penalty: 1.05, thinking: !0},
   },
-  A = T;
-var q = {
+  P = T;
+var b = {
     config: {apiKey: process.env.OLLM_API_KEY || 'ah.yiru@gmail.com', host: process.env.OLLM_API_HOST || 'http://127.0.0.1:11434'},
     params: {model: 'qwen3-vl:latest', keep_alive: -1},
     options: {temperature: 1, num_ctx: 4096, top_k: 20, top_p: 0.95, repeat_penalty: 1.05},
   },
-  I = q;
-var F = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
-  C = async (t, r, o) => {
-    if (r) {
-      let s = '',
-        n = '';
-      for await (let e of t) {
-        let {type: a, delta: c} = e;
-        (F.includes(a) && (n += c), a === 'response.output_text.delta' && (s += c), o?.({content: s, reasoning: n}, e));
-      }
-      return {content: s, reasoning: n};
-    }
-    return (o?.(t), {reasoning: (t.output?.[0]?.content ?? t.output?.[0]?.summary)?.[0]?.text, content: t.output_text});
-  },
-  P = async (t, r, o) => {
-    if (r) {
-      let e = '',
-        a = '';
-      for await (let c of t) {
-        let {delta: p} = c.choices?.[0] ?? {},
-          {reasoning: u, content: m} = p ?? {};
-        (u && (a += u), m && (e += m), o?.({content: e, reasoning: a}, c));
-      }
-      return {content: e, reasoning: a};
-    }
-    o?.(t);
-    let {message: i} = t.choices?.[0] ?? {},
-      {content: s, reasoning: n} = i;
-    return {content: s, reasoning: n};
-  };
-var Y = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
-  k = async (t, r, o) => {
-    if (r) {
-      let s = '',
-        n = '';
-      for await (let e of t) {
-        let {type: a, delta: c} = e;
-        (Y.includes(a) && (n += c), a === 'response.output_text.delta' && (s += c), o?.({content: s, reasoning: n}, e));
-      }
-      return {content: s, reasoning: n};
-    }
-    return (o?.(t), {reasoning: (t.output?.[0]?.content ?? t.output?.[0]?.summary)?.[0]?.text, content: t.output_text});
-  },
-  v = async (t, r, o) => {
-    if (r) {
-      let n = '',
+  A = b;
+var q = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
+  I = async (t, a, o) => {
+    if (a) {
+      let r = '',
         e = '';
-      for await (let a of t) {
-        let c = a.reasoning ?? a.thinking,
-          p = a.content ?? a.response;
-        (c && (e += c), p && (n += p), o?.({content: n, reasoning: e}, a));
+      for await (let n of t) {
+        let {type: s, delta: i} = n;
+        (q.includes(s) && (e += i), s === 'response.output_text.delta' && (r += i), o?.({content: r, reasoning: e}, n));
       }
-      return {content: n, reasoning: e};
+      return {content: r, reasoning: e};
     }
-    o?.(t);
-    let i = t.reasoning ?? t.thinking;
-    return {content: t.content ?? t.response, reasoning: i};
+    return (o?.(t), {reasoning: (t.output?.[0]?.content ?? t.output?.[0]?.summary)?.[0]?.text, content: t.output_text});
   },
-  O = async (t, r, o) => {
-    if (r) {
-      let e = '',
-        a = '';
-      for await (let c of t) {
-        let {message: p} = c,
-          u = p.reasoning ?? p.thinking,
-          m = p.content ?? p.response;
-        (u && (a += u), m && (e += m), o?.({content: e, reasoning: a}, c));
+  C = async (t, a, o) => {
+    if (a) {
+      let n = '',
+        s = '';
+      for await (let i of t) {
+        let {delta: p} = i.choices?.[0] ?? {},
+          {reasoning: l, content: u} = p ?? {};
+        (l && (s += l), u && (n += u), o?.({content: n, reasoning: s}, i));
       }
-      return {content: e, reasoning: a};
+      return {content: n, reasoning: s};
     }
-    let {message: i} = t;
     o?.(t);
-    let s = i.reasoning ?? i.thinking;
-    return {content: i.content ?? i.response, reasoning: s};
+    let {message: c} = t.choices?.[0] ?? {},
+      {content: r, reasoning: e} = c;
+    return {content: r, reasoning: e};
   };
-var x = (t, r = {}, o = 'chat') => {
-    if (!t) throw Error('\u8BF7\u4F20\u5165\u4F60\u7684 prompt !');
-    if (o === 'chat') {
-      let s = Array.isArray(t) ? t : [{role: 'user', content: t}],
-        {system: n, ...e} = r;
-      return (n && (s = [{role: 'system', content: n}, ...s]), {messages: s, ...e});
+var S = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
+  O = async (t, a, o) => {
+    if (a) {
+      let r = '',
+        e = '';
+      for await (let n of t) {
+        let {type: s, delta: i} = n;
+        (S.includes(s) && (e += i), s === 'response.output_text.delta' && (r += i), o?.({content: r, reasoning: e}, n));
+      }
+      return {content: r, reasoning: e};
     }
-    if (o === 'responses') {
-      let {instructions: s, system: n, ...e} = r;
-      return (s || (e.instructions = n), {input: t, ...e});
-    }
-    return {prompt: Array.isArray(t) ? t.slice(-1)[0]?.content : t, ...r};
+    return (o?.(t), {reasoning: (t.output?.[0]?.content ?? t.output?.[0]?.summary)?.[0]?.text, content: t.output_text});
   },
-  y = ({options: t, extra_body: r, ...o}, i = {}, s) => {
-    let n = {...i.params, ...o},
-      e = {...i.options, ...t};
-    return (s === 'openai' ? (n.extra_body = {...e, ...r}) : (n.options = e), n);
+  k = async (t, a, o) => {
+    if (a) {
+      let e = '',
+        n = '';
+      for await (let s of t) {
+        let i = s.reasoning ?? s.thinking,
+          p = s.content ?? s.response;
+        (i && (n += i), p && (e += p), o?.({content: e, reasoning: n}, s));
+      }
+      return {content: e, reasoning: n};
+    }
+    o?.(t);
+    let c = t.reasoning ?? t.thinking;
+    return {content: t.content ?? t.response, reasoning: c};
+  },
+  v = async (t, a, o) => {
+    if (a) {
+      let n = '',
+        s = '';
+      for await (let i of t) {
+        let {message: p} = i,
+          l = p.reasoning ?? p.thinking,
+          u = p.content ?? p.response;
+        (l && (s += l), u && (n += u), o?.({content: n, reasoning: s}, i));
+      }
+      return {content: n, reasoning: s};
+    }
+    let {message: c} = t;
+    o?.(t);
+    let r = c.reasoning ?? c.thinking;
+    return {content: c.content ?? c.response, reasoning: r};
+  };
+var B = (t, a = {}, o = 'chat') => {
+  if (!t) throw Error('\u8BF7\u4F20\u5165\u4F60\u7684 prompt !');
+  if (o === 'chat') {
+    let r = Array.isArray(t) ? t : [{role: 'user', content: t}],
+      {system: e, ...n} = a;
+    return (e && (r = [{role: 'system', content: e}, ...r]), {messages: r, ...n});
+  }
+  if (o === 'responses') {
+    let {instructions: r, system: e, ...n} = a;
+    return (r || (n.instructions = e), {input: t, ...n});
+  }
+  return {prompt: Array.isArray(t) ? t.slice(-1)[0]?.content : t, ...a};
+};
+var w =
+  ({params: t, options: a} = {}, o) =>
+  (c, r = {}, e) => {
+    let {options: n, ...s} = r,
+      i = B(c, {...t, ...s}, e),
+      p = {...a, ...n};
+    return (o === 'openai' ? (i.extra_body = p) : (i.options = p), i);
   };
 var L = {
-  openai: (t, r) => {
-    let {config: o, params: i, options: s} = A,
-      {host: n, baseURL: e, ...a} = t,
-      c = new H({fetch: w, ...o, ...a, baseURL: n || e}),
-      {options: p, extra_body: u, ...m} = r,
-      h = {...i, ...m, options: {...s, ...p, ...u}};
+  openai: (t = {}, a = {}) => {
+    let {config: o, params: c, options: r} = P,
+      {host: e, baseURL: n, ...s} = t,
+      i = new j({fetch: R, ...o, ...s, baseURL: e || n}),
+      {options: p, extra_body: l, ...u} = a,
+      h = {params: {...c, ...u}, options: {...r, ...l, ...p}},
+      x = w(h, 'openai');
     return {
-      chat: async (f, l = {}, g) => {
-        let d = P,
-          _ = x(f, l, 'chat'),
-          R = await c.chat.completions.create(y(_, h, 'openai'));
-        return d(R, _.stream, g);
+      chat: async (m, f = {}, g) => {
+        let y = x(m, f, 'chat'),
+          _ = C,
+          d = await i.chat.completions.create(y);
+        return _(d, y.stream, g);
       },
-      responses: async (f, l = {}, g) => {
-        let d = C,
-          _ = x(f, l, 'responses'),
-          R = await c.responses.create(y(_, h, 'openai'));
-        return d(R, _.stream, g);
+      responses: async (m, f = {}, g) => {
+        let y = x(m, f, 'responses'),
+          _ = I,
+          d = await i.responses.create(y);
+        return _(d, y.stream, g);
       },
     };
   },
-  ollama: (t, r) => {
-    let {config: o, params: i, options: s} = I,
-      n = new B({fetch: w, ...o, ...t}),
-      {options: e, extra_body: a, ...c} = r,
-      p = {...i, ...c, options: {...s, ...e, ...a}};
+  ollama: (t = {}, a = {}) => {
+    let {config: o, params: c, options: r} = A,
+      e = new H({fetch: R, ...o, ...t}),
+      {options: n, extra_body: s, ...i} = a,
+      p = {params: {...c, ...i}, options: {...r, ...s, ...n}},
+      l = w(p, 'ollama');
     return {
-      chat: async (u, m = {}, h) => {
-        let f = O,
-          l = x(u, m, 'chat'),
-          g = await n.chat(y(l, p, 'ollama'));
-        return f(g, l.stream, h);
+      chat: async (u, h = {}, x) => {
+        let m = l(u, h, 'chat'),
+          f = v,
+          g = await e.chat(m);
+        return f(g, m.stream, x);
       },
-      generate: async (u, m = {}, h) => {
-        let f = v,
-          l = x(u, m, 'generate'),
-          g = await n.generate(y(l, p, 'ollama'));
-        return f(g, l.stream, h);
+      generate: async (u, h = {}, x) => {
+        let m = l(u, h, 'generate'),
+          f = k,
+          g = await e.generate(m);
+        return f(g, m.stream, x);
       },
-      responses: async (u, m = {}, h) => {
-        let f = k,
-          l = x(u, m, 'responses'),
-          g = await n.responses(y(l, p, 'ollama'));
-        return f(g, l.stream, h);
+      responses: async (u, h = {}, x) => {
+        let m = l(u, h, 'responses'),
+          f = O,
+          g = await e.responses(m);
+        return f(g, m.stream, x);
       },
     };
   },
 };
-var j = (t = 'ollama', r, o) => (L[t] ?? L.ollama)(r, o),
-  et = j;
-export {et as default, j as startApi};
+var z = (t = 'ollama', a, o) => (L[t] ?? L.ollama)(a, o),
+  ot = z;
+export {ot as default, z as startApi};
