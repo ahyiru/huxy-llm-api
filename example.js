@@ -1,14 +1,14 @@
 import startApi from './index.js';
 
 const ollamaApi = startApi('ollama', {
-  apiKey: '123',
+  apiKey: '1234',
   host: 'http://192.168.0.111:11434',
   // headers
   // fetch
 });
 
 const openaiApi = startApi('openai', {
-  apiKey: '123',
+  apiKey: '1234',
   baseURL: 'http://192.168.0.111:11434/v1',
   // headers
   // fetch

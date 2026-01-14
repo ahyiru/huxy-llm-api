@@ -32,6 +32,9 @@ import startApi from 'huxy-llm-api';
 const ollamaApi = startApi('ollama', {
   apiKey: 'your-api-key',
   host: 'http://localhost:11434',
+  dispatcher: {
+    headersTimeout: 10 * 60 * 1000,
+  },
 }, {
   model: 'qwen3-vl:latest',
   options: {
@@ -89,7 +92,8 @@ console.log('对话结果:', response);
 **参数:**
 
 - `apiType`: `'ollama'` 或 `'openai'` - 指定要使用的 API 类型
-- `userConfig`: 对象 - 自定义配置，会覆盖默认配置
+- `userConfig`: 对象 - 自定义 API 接口配置，如 apiKey、baseURL、fetch 等
+- `userOption`: 对象 - 通用模型参数配置
 
 **返回:** API 客户端实例，包含以下方法：
 
@@ -126,8 +130,8 @@ console.log('对话结果:', response);
 
 ```javascript
 {
-  apiKey: process.env.OLLM_API_KEY || 'huxy@zys',
-  host: process.env.OLLM_API_HOST || 'http://192.168.0.111:11434',
+  apiKey: process.env.OLLM_API_KEY || '1234',
+  host: process.env.OLLM_API_HOST || 'http://localhost:11434',
   params: {
     model: 'qwen3-vl:latest',
     keep_alive: -1,
@@ -146,8 +150,8 @@ console.log('对话结果:', response);
 
 ```javascript
 {
-  apiKey: process.env.LLM_API_KEY || 'huxy@zys',
-  baseURL: process.env.LLM_API_BASEURL || 'http://192.168.0.111:11434/v1',
+  apiKey: process.env.LLM_API_KEY || '1234',
+  baseURL: process.env.LLM_API_BASEURL || 'http://localhost:11434/v1',
   timeout: 3 * 60 * 60 * 1000,
   maxRetries: 3,
   params: {
