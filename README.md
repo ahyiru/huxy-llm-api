@@ -32,6 +32,7 @@ import startApi from 'huxy-llm-api';
 const ollamaApi = startApi('ollama', {
   apiKey: 'your-api-key',
   host: 'http://localhost:11434',
+  // undici dispatcher
   dispatcher: {
     headersTimeout: 10 * 60 * 1000,
   },
@@ -85,7 +86,7 @@ console.log('对话结果:', response);
 
 ## API 文档
 
-### `startApi(apiType, userConfig)`
+### `startApi(apiType, userConfig, userOption)`
 
 初始化 LLM API 客户端。
 
@@ -113,11 +114,13 @@ console.log('对话结果:', response);
 - `prompt`: 字符串或消息数组 - 输入提示
 - `configs`: 对象 - 模型参数配置
   - `model`: 模型名称
+  - `system`: 系统提示词
   - `stream`: 是否流式响应（默认: false）
-  - `system`: 系统提示（聊天模式）
-  - `options`: 其他模型参数（OpenAI 可使用 `extra_body`）
+  - `think`: 是否开启思考模式（需模型支持）（Boolean 或 'high | medium | low'。默认: false）
+  - `options`: 其他模型参数（OpenAI 可使用 `extra_body`）[详细参数配置 parameter](https://docs.ollama.com/modelfile#parameter)
      - `temperature`: 生成温度（0-1）
      - `top_p`: 核采样概率
+     - ...
 - `callback`: 函数 - 流式响应回调
 
 ## 配置
@@ -133,15 +136,10 @@ console.log('对话结果:', response);
   apiKey: process.env.OLLM_API_KEY || '1234',
   host: process.env.OLLM_API_HOST || 'http://localhost:11434',
   params: {
-    model: 'qwen3-vl:latest',
-    keep_alive: -1,
+    // keep_alive: -1,
   },
   options: {
-    temperature: 0.6,
-    num_ctx: 4096,
-    top_k: 20,
-    top_p: 0.9,
-    repeat_penalty: 1.15,
+    // temperature: 0.6,
   }
 }
 ```
@@ -152,20 +150,11 @@ console.log('对话结果:', response);
 {
   apiKey: process.env.LLM_API_KEY || '1234',
   baseURL: process.env.LLM_API_BASEURL || 'http://localhost:11434/v1',
-  timeout: 3 * 60 * 60 * 1000,
-  maxRetries: 3,
   params: {
-    model: 'qwen3-vl:latest',
-    temperature: 0.15,
-    max_tokens: 4096,
-    top_p: 0.9,
-    presence_penalty: 0.5,
-    frequency_penalty: 0.5,
+    // temperature: 1,
   },
   options: {
-    top_k: 20,
-    repeat_penalty: 1.15,
-    thinking: true,
+    // thinking: true,
   }
 }
 ```
