@@ -32,7 +32,6 @@ import startApi from 'huxy-llm-api';
 const ollamaApi = startApi('ollama', {
   apiKey: 'your-api-key',
   host: 'http://localhost:11434',
-  // undici dispatcher
   dispatcher: {
     headersTimeout: 10 * 60 * 1000,
   },
@@ -84,9 +83,45 @@ const response = await openaiApi.chat('你是谁', {
 console.log('对话结果:', response);
 ```
 
+#### 图片处理函数
+
+- `saveImage(base64String, outputDir = './images', name)`: 保存 base64 图片到本地。
+- `imageToBase64(imagePath, includeMimeType = false)`: 将本地图片转为 base64 字符串。
+
+使用：
+
+```
+// imageToBase64
+const image = await ollamaApi.imageToBase64('./example.png');
+const result = await ollamaApi.generate('你好', {
+  model: 'qwen3-vl',
+  stream: false,
+  image,
+  options: {
+    temperature: 0.15,
+    top_p: 0.9,
+  },
+}, (message) => {
+  console.log('实时响应:', message);
+});
+
+// saveImage
+const result = await ollamaApi.generate('你好', {
+  model: 'qwen3-vl',
+  stream: false,
+  options: {
+    temperature: 0.15,
+    top_p: 0.9,
+  },
+}, (message) => {
+  console.log('实时响应:', message);
+});
+saveImage(result.image);
+```
+
 ## API 文档
 
-### `startApi(apiType, userConfig, userOption)`
+### `startApi(apiType, userConfig)`
 
 初始化 LLM API 客户端。
 
@@ -114,13 +149,11 @@ console.log('对话结果:', response);
 - `prompt`: 字符串或消息数组 - 输入提示
 - `configs`: 对象 - 模型参数配置
   - `model`: 模型名称
-  - `system`: 系统提示词
   - `stream`: 是否流式响应（默认: false）
-  - `think`: 是否开启思考模式（需模型支持）（Boolean 或 'high | medium | low'。默认: false）
-  - `options`: 其他模型参数（OpenAI 可使用 `extra_body`）[详细参数配置 parameter](https://docs.ollama.com/modelfile#parameter)
+  - `system`: 系统提示（聊天模式）
+  - `options`: 其他模型参数（OpenAI 可使用 `extra_body`）
      - `temperature`: 生成温度（0-1）
      - `top_p`: 核采样概率
-     - ...
 - `callback`: 函数 - 流式响应回调
 
 ## 配置
