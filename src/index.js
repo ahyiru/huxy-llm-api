@@ -5,7 +5,7 @@ var U = (t, o) => {
 import {Ollama as at} from 'ollama';
 import it from 'openai';
 import {fetch as F, Agent as T} from 'undici';
-var z = 3600 * 1e3,
+var z = 7200 * 1e3,
   N = t => (o, e) => F(o, {...e, dispatcher: new T({headersTimeout: z, ...t})}),
   y = N;
 var S = {config: {apiKey: process.env.OLLM_API_KEY, host: process.env.OLLM_API_HOST}, params: {}, options: {}},
@@ -25,6 +25,7 @@ var H = ['temperature', 'seed', 'stop', 'top_p'],
     );
   },
   W = t => {
+    if (typeof t == 'string') return {input: t};
     let o = [],
       e;
     for (let s of t) {
@@ -61,7 +62,7 @@ var H = ['temperature', 'seed', 'stop', 'top_p'],
     if (e === 'responses') {
       let {instructions: a, system: n, ...r} = o,
         i = W(t);
-      return ((r.instructions = a || n || i.instructions), {input: i.input, ...r});
+      return ((r.instructions = i.instructions || a || n), {input: i.input, ...r});
     }
     return {prompt: Array.isArray(t) ? t.slice(-1)[0]?.content : t, ...o};
   };
