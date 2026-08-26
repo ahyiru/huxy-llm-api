@@ -1,30 +1,32 @@
-var M = Object.defineProperty;
-var U = (t, o) => {
-  for (var e in o) M(t, e, {get: o[e], enumerable: !0});
+var T = Object.defineProperty;
+var M = (t, o) => {
+  for (var e in o) T(t, e, {get: o[e], enumerable: !0});
 };
 import {Ollama as at} from 'ollama';
 import it from 'openai';
-import {fetch as F, Agent as T} from 'undici';
-var z = 7200 * 1e3,
-  N = t => (o, e) => F(o, {...e, dispatcher: new T({headersTimeout: z, ...t})}),
+import {fetch as U, Agent as F, setGlobalDispatcher as z} from 'undici';
+var N = t => (o, e) => {
+    let s = new F({headersTimeout: 0, bodyTimeout: 0, connectTimeout: 6e4, ...t});
+    return (z(s), U(o, e));
+  },
   y = N;
 var S = {config: {apiKey: process.env.OLLM_API_KEY, host: process.env.OLLM_API_HOST}, params: {}, options: {}},
   w = S;
 var Y = {config: {apiKey: process.env.LLM_API_KEY, baseURL: process.env.LLM_API_BASEURL}, params: {}, options: {}},
   _ = Y;
-var H = ['temperature', 'seed', 'stop', 'top_p'],
-  V = t => {
+var D = ['temperature', 'seed', 'stop', 'top_p'],
+  G = t => {
     let {max_tokens: o, options: e = {}, ...s} = t,
       {num_ctx: a, ...n} = e;
     return (
       (s.max_tokens = o ?? a),
       Object.keys(n).map(r => {
-        H.includes(r) ? (s[r] = n[r]) : (s.extra_body || (s.extra_body = {}), (s.extra_body[r] = n[r]), delete s[r]);
+        D.includes(r) ? (s[r] = n[r]) : (s.extra_body || (s.extra_body = {}), (s.extra_body[r] = n[r]), delete s[r]);
       }),
       s
     );
   },
-  W = t => {
+  H = t => {
     if (typeof t == 'string') return {input: t};
     let o = [],
       e;
@@ -51,7 +53,7 @@ var H = ['temperature', 'seed', 'stop', 'top_p'],
     }
     return {input: o, instructions: e};
   },
-  q = (t, o = {}, e = 'chat') => {
+  V = (t, o = {}, e = 'chat') => {
     if (!t) throw Error('\u8BF7\u4F20\u5165\u4F60\u7684 prompt !');
     if (!o.model) throw Error('\u8BF7\u914D\u7F6E\u8981\u4F7F\u7528\u7684\u5927\u6A21\u578B model !');
     if (e === 'chat') {
@@ -61,7 +63,7 @@ var H = ['temperature', 'seed', 'stop', 'top_p'],
     }
     if (e === 'responses') {
       let {instructions: a, system: n, ...r} = o,
-        i = W(t);
+        i = H(t);
       return ((r.instructions = i.instructions || a || n), {input: i.input, ...r});
     }
     return {prompt: Array.isArray(t) ? t.slice(-1)[0]?.content : t, ...o};
@@ -70,17 +72,17 @@ var R =
   ({params: t, options: o} = {}, e) =>
   (s, a = {}, n) => {
     let {options: r, extra_body: i, ...p} = a,
-      c = q(s, {...t, ...p}, n);
-    return ((c.options = {...o, ...i, ...r}), e === 'openai' ? V(c) : c);
+      c = V(s, {...t, ...p}, n);
+    return ((c.options = {...o, ...i, ...r}), e === 'openai' ? G(c) : c);
   };
-var D = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
+var W = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
   A = async (t, o, e) => {
     if (o) {
       let a = '',
         n = '';
       for await (let i of t) {
         let {type: p, delta: c} = i;
-        (D.includes(p) && ((n += c), e?.({content: a, reasoning: n}, i)),
+        (W.includes(p) && ((n += c), e?.({content: a, reasoning: n}, i)),
           p === 'response.output_text.delta' && ((a += c), e?.({content: a, reasoning: n}, i)));
       }
       let r = {content: a, reasoning: n, done: !0};
@@ -106,7 +108,7 @@ var D = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta
     return {content: a, reasoning: n};
   };
 var d = {};
-U(d, {chat: () => g, default: () => Z, generate: () => Q, image: () => X, responses: () => l});
+M(d, {chat: () => g, default: () => Z, generate: () => Q, image: () => X, responses: () => l});
 var J = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
   l = async (t, o, e) => {
     if (o) {
@@ -258,8 +260,8 @@ var ct = {
       {baseURL: c, host: u, dispatcher: f, ...m} = {...r, ...o};
     if (((m[s] = u || c), !m[s])) throw Error('\u8BF7\u914D\u7F6E\u5927\u6A21\u578B API \u5730\u5740 host/baseURL !');
     let E = n({fetch: y(f), ...m}),
-      {options: K, extra_body: $, ...b} = e,
-      j = {params: {...i, ...b}, options: {...p, ...$, ...K}},
+      {options: K, extra_body: b, ...$} = e,
+      j = {params: {...i, ...$}, options: {...p, ...b, ...K}},
       B = R(j, t);
     return v[t](E, B);
   },
