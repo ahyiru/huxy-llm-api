@@ -5,7 +5,7 @@ var U = (t, n) => {
 import {Ollama as it} from 'ollama';
 import ct from 'openai';
 import {fetch as F, Agent as S} from 'undici';
-var x = 72e5,
+var x = 9e6,
   z = {
     bodyTimeout: 0,
     headersTimeout: 0,
@@ -15,7 +15,12 @@ var x = 72e5,
     connections: 100,
     pipelining: 1,
   },
-  N = t => ({timeout: x, maxRetries: 3, fetch: F, fetchOptions: {dispatcher: new S({...z, ...t})}}),
+  N = ({timeout: t, ...n} = {}) => ({
+    timeout: t || x,
+    maxRetries: 3,
+    fetch: F,
+    fetchOptions: {dispatcher: new S({...z, ...n})},
+  }),
   _ = N;
 var Y = {config: {apiKey: process.env.OLLM_API_KEY, host: process.env.OLLM_API_HOST}, params: {}, options: {}},
   w = Y;
