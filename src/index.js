@@ -1,31 +1,23 @@
-var B = Object.defineProperty;
-var U = (t, n) => {
-  for (var e in n) B(t, e, {get: n[e], enumerable: !0});
+var j = Object.defineProperty;
+var B = (t, n) => {
+  for (var e in n) j(t, e, {get: n[e], enumerable: !0});
 };
 import {Ollama as it} from 'ollama';
 import ct from 'openai';
-import {fetch as F, Agent as S} from 'undici';
-var x = 9e6,
-  z = {
-    bodyTimeout: 0,
-    headersTimeout: 0,
-    keepAliveTimeout: x,
-    keepAliveMaxTimeout: x,
-    connectTimeout: 6e4,
-    connections: 100,
-    pipelining: 1,
-  },
+import {fetch as U, Agent as F} from 'undici';
+var S = 18e6,
+  z = {bodyTimeout: 0, headersTimeout: 0, keepAliveTimeout: 6e4, keepAliveMaxTimeout: 6e5, connectTimeout: 6e4},
   N = ({timeout: t, ...n} = {}) => ({
-    timeout: t || x,
-    maxRetries: 3,
-    fetch: F,
-    fetchOptions: {dispatcher: new S({...z, ...n})},
+    timeout: t || S,
+    maxRetries: 0,
+    fetch: U,
+    fetchOptions: {dispatcher: new F({...z, ...n})},
   }),
-  _ = N;
+  y = N;
 var Y = {config: {apiKey: process.env.OLLM_API_KEY, host: process.env.OLLM_API_HOST}, params: {}, options: {}},
-  w = Y;
+  _ = Y;
 var q = {config: {apiKey: process.env.LLM_API_KEY, baseURL: process.env.LLM_API_BASEURL}, params: {}, options: {}},
-  R = q;
+  w = q;
 var H = ['temperature', 'seed', 'stop', 'top_p', 'max_tokens', 'frequency_penalty', 'presence_penalty'],
   V = t => {
     let {options: n = {}, ...e} = t;
@@ -78,7 +70,7 @@ var H = ['temperature', 'seed', 'stop', 'top_p', 'max_tokens', 'frequency_penalt
     }
     return {prompt: Array.isArray(t) ? t.slice(-1)[0]?.content : t, ...n};
   };
-var A =
+var R =
   ({params: t, options: n} = {}, e) =>
   (s, r = {}, o) => {
     let {options: a, extra_body: i, ...p} = r,
@@ -86,7 +78,7 @@ var A =
     return ((c.options = {...n, ...i, ...a}), e === 'openai' ? V(c) : c);
   };
 var G = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
-  I = async (t, n, e) => {
+  A = async (t, n, e) => {
     if (n) {
       let r = '',
         o = '';
@@ -100,7 +92,7 @@ var G = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta
     }
     return (e?.(t), {reasoning: (t.output?.[0]?.content ?? t.output?.[0]?.summary)?.[0]?.text, content: t.output_text});
   },
-  v = async (t, n, e) => {
+  I = async (t, n, e) => {
     if (n) {
       let a = '',
         i = '';
@@ -117,10 +109,10 @@ var G = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta
       {content: r, reasoning: o} = s;
     return {content: r, reasoning: o};
   };
-var h = {};
-U(h, {chat: () => g, default: () => k, generate: () => X, image: () => Z, responses: () => d});
+var d = {};
+B(d, {chat: () => g, default: () => k, generate: () => X, image: () => Z, responses: () => x});
 var Q = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
-  d = async (t, n, e) => {
+  x = async (t, n, e) => {
     if (n) {
       let r = '',
         o = '';
@@ -172,7 +164,7 @@ var Q = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta
     return {content: s.content ?? s.response, reasoning: r};
   },
   k = g;
-import O from 'node:fs/promises';
+import C from 'node:fs/promises';
 var l = {
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
@@ -183,25 +175,25 @@ var l = {
     '.svg': 'image/svg+xml',
     '.tiff': 'image/tiff',
   },
-  y = '.png',
+  h = '.png',
   tt = t => Object.fromEntries(Object.entries(t).map(([n, e]) => [e, n])),
-  C = tt(l);
+  v = tt(l);
 var et = t => {
     let n = /^data:(image\/[a-z]+);base64,(.+)$/i,
       e = t.match(n);
-    return e ? {ext: C[e[1]] ?? y, data: e[2]} : {ext: y, data: t};
+    return e ? {ext: v[e[1]] ?? h, data: e[2]} : {ext: h, data: t};
   },
   nt = async (t, n = './images', e) => {
     try {
-      await O.mkdir(n, {recursive: !0});
+      await C.mkdir(n, {recursive: !0});
       let {ext: s, data: r} = et(t),
         o = `${n}/image_${e || Date.now()}${s}`;
-      return (await O.writeFile(o, Buffer.from(r, 'base64')), o);
+      return (await C.writeFile(o, Buffer.from(r, 'base64')), o);
     } catch (s) {
       throw s;
     }
   },
-  E = nt;
+  O = nt;
 import {readFile as ot} from 'fs/promises';
 import {extname as st} from 'path';
 var rt = async (t, n = !1) => {
@@ -214,19 +206,19 @@ var rt = async (t, n = !1) => {
       throw e.code === 'ENOENT' ? new Error(`\u6587\u4EF6\u4E0D\u5B58\u5728: ${t}`) : e;
     }
   },
-  L = rt;
+  E = rt;
 var at = t => (t?.startsWith('x/') ? 'image' : 'generate'),
-  P = {
+  L = {
     openai: (t, n) => ({
       chat: async (e, s = {}, r) => {
         let o = n(e, s, 'chat'),
-          a = v,
+          a = I,
           i = await t.chat.completions.create(o);
         return a(i, o.stream, r);
       },
       responses: async (e, s = {}, r) => {
         let o = n(e, s, 'responses'),
-          a = I,
+          a = A,
           i = await t.responses.create(o);
         return a(i, o.stream, r);
       },
@@ -240,28 +232,28 @@ var at = t => (t?.startsWith('x/') ? 'image' : 'generate'),
       },
       generate: async (e, s = {}, r) => {
         let o = n(e, s, 'generate'),
-          a = h[at(o.model)],
+          a = d[at(o.model)],
           i = await t.generate(o);
         return a(i, o.stream, r);
       },
       responses: async (e, s = {}, r) => {
         let o = n(e, s, 'responses'),
-          a = d,
+          a = x,
           i = await t.responses(o);
         return a(i, o.stream, r);
       },
-      saveImage: E,
-      imageToBase64: L,
+      saveImage: O,
+      imageToBase64: E,
     }),
   };
 var pt = {
     ollama: {
       hostKey: 'host',
-      envConfig: w,
+      envConfig: _,
       API: ({apiKey: t, headers: n, ...e}) =>
         new it({headers: {Authorization: t ? `Bearer ${t}` : void 0, ...n}, ...e}),
     },
-    openai: {hostKey: 'baseURL', envConfig: R, API: t => new ct(t)},
+    openai: {hostKey: 'baseURL', envConfig: w, API: t => new ct(t)},
   },
   ut = (t = 'ollama', n = {}, e = {}) => {
     t = ['ollama', 'openai'].includes(t) ? t : 'ollama';
@@ -269,11 +261,11 @@ var pt = {
       {config: a, params: i, options: p} = r,
       {baseURL: c, host: u, dispatcher: f, ...m} = {...a, ...n};
     if (((m[s] = u || c), !m[s])) throw Error('\u8BF7\u914D\u7F6E\u5927\u6A21\u578B API \u5730\u5740 host/baseURL !');
-    let K = o({..._(f), ...m}),
-      {options: T, extra_body: $, ...b} = e,
-      M = {params: {...i, ...b}, options: {...p, ...$, ...T}},
-      j = A(M, t);
-    return P[t](K, j);
+    let P = o({...y(f), ...m}),
+      {options: K, extra_body: T, ...$} = e,
+      b = {params: {...i, ...$}, options: {...p, ...T, ...K}},
+      M = R(b, t);
+    return L[t](P, M);
   },
   jt = ut;
 export {jt as default, ut as startApi};
