@@ -6,7 +6,7 @@ import {Ollama as at} from 'ollama';
 import it from 'openai';
 import {fetch as b, Agent as F} from 'undici';
 var S = 18e6,
-  z = {bodyTimeout: 0, headersTimeout: 0, keepAliveTimeout: 6e4, keepAliveMaxTimeout: 6e5, connectTimeout: 6e4},
+  z = {bodyTimeout: 0, headersTimeout: 0, keepAliveTimeout: 9e4, connectTimeout: 6e4},
   N = ({timeout: t, ...n} = {}) => ({
     timeout: t || S,
     maxRetries: 0,
@@ -76,14 +76,14 @@ var R =
       c = W(s, {...t, ...p}, o);
     return ((c.options = {...n, ...i, ...a}), e === 'openai' ? H(c) : c);
   };
-var k = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
+var D = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
   A = async (t, n, e) => {
     if (n) {
       let r = '',
         o = '';
       for await (let i of t) {
         let {type: p, delta: c} = i;
-        (k.includes(p) && ((o += c), e?.({content: r, reasoning: o}, i)),
+        (D.includes(p) && ((o += c), e?.({content: r, reasoning: o}, i)),
           p === 'response.output_text.delta' && ((r += c), e?.({content: r, reasoning: o}, i)));
       }
       let a = {content: r, reasoning: o, done: !0};
@@ -109,15 +109,15 @@ var k = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta
     return {content: r, reasoning: o};
   };
 var h = {};
-U(h, {chat: () => g, default: () => X, generate: () => J, image: () => Q, responses: () => x});
-var G = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
+U(h, {chat: () => g, default: () => Z, generate: () => Q, image: () => X, responses: () => x});
+var J = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta'],
   x = async (t, n, e) => {
     if (n) {
       let r = '',
         o = '';
       for await (let i of t) {
         let {type: p, delta: c} = i;
-        (G.includes(p) && ((o += c), e?.({content: r, reasoning: o}, i)),
+        (J.includes(p) && ((o += c), e?.({content: r, reasoning: o}, i)),
           p === 'response.output_text.delta' && ((r += c), e?.({content: r, reasoning: o}, i)));
       }
       let a = {content: r, reasoning: o, done: !0};
@@ -125,7 +125,7 @@ var G = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta
     }
     return (e?.(t), {reasoning: (t.output?.[0]?.content ?? t.output?.[0]?.summary)?.[0]?.text, content: t.output_text});
   },
-  J = async (t, n, e) => {
+  Q = async (t, n, e) => {
     if (n) {
       let o = '',
         a = '';
@@ -141,7 +141,7 @@ var G = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta
     let s = t.reasoning ?? t.thinking;
     return {content: t.content ?? t.response, reasoning: s};
   },
-  Q = async (t, n, e) => {
+  X = async (t, n, e) => {
     for await (let s of t) e?.(s);
   },
   g = async (t, n, e) => {
@@ -162,8 +162,8 @@ var G = ['response.reasoning_text.delta', 'response.reasoning_summary_text.delta
     let r = s.reasoning ?? s.thinking;
     return {content: s.content ?? s.response, reasoning: r};
   },
-  X = g;
-import C from 'node:fs/promises';
+  Z = g;
+import O from 'node:fs/promises';
 var l = {
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
@@ -175,24 +175,24 @@ var l = {
     '.tiff': 'image/tiff',
   },
   d = '.png',
-  Z = t => Object.fromEntries(Object.entries(t).map(([n, e]) => [e, n])),
-  v = Z(l);
+  k = t => Object.fromEntries(Object.entries(t).map(([n, e]) => [e, n])),
+  C = k(l);
 var tt = t => {
     let n = /^data:(image\/[a-z]+);base64,(.+)$/i,
       e = t.match(n);
-    return e ? {ext: v[e[1]] ?? d, data: e[2]} : {ext: d, data: t};
+    return e ? {ext: C[e[1]] ?? d, data: e[2]} : {ext: d, data: t};
   },
   et = async (t, n = './images', e) => {
     try {
-      await C.mkdir(n, {recursive: !0});
+      await O.mkdir(n, {recursive: !0});
       let {ext: s, data: r} = tt(t),
         o = `${n}/image_${e || Date.now()}${s}`;
-      return (await C.writeFile(o, Buffer.from(r, 'base64')), o);
+      return (await O.writeFile(o, Buffer.from(r, 'base64')), o);
     } catch (s) {
       throw s;
     }
   },
-  O = et;
+  v = et;
 import {readFile as nt} from 'fs/promises';
 import {extname as ot} from 'path';
 var st = async (t, n = !1) => {
@@ -241,7 +241,7 @@ var rt = t => (t?.startsWith('x/') ? 'image' : 'generate'),
           i = await t.responses(o);
         return a(i, o.stream, r);
       },
-      saveImage: O,
+      saveImage: v,
       imageToBase64: E,
     }),
   };
@@ -262,9 +262,9 @@ var ct = {
     if (((m[s] = u || c), !m[s])) throw Error('\u8BF7\u914D\u7F6E\u5927\u6A21\u578B API \u5730\u5740 host/baseURL !');
     let P = o({...y(f), ...m}),
       {options: K, extra_body: T, ...$} = e,
-      M = {params: {...i, ...$}, options: {...p, ...T, ...K}},
-      j = R(M, t);
-    return L[t](P, j);
+      j = {params: {...i, ...$}, options: {...p, ...T, ...K}},
+      M = R(j, t);
+    return L[t](P, M);
   },
-  jt = pt;
-export {jt as default, pt as startApi};
+  Mt = pt;
+export {Mt as default, pt as startApi};
